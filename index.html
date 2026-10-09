@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fetch - Live Interactive Web Demo (TAB inc.)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  body {
+    background: #060911;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .demo-header {
+    background: #0c1220;
+    border-bottom: 1px solid #1e293b;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+  }
+  .demo-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .demo-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+  }
+  .demo-title-group h1 {
+    font-size: 17px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .demo-badge {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .demo-subtitle {
+    font-size: 12px;
+    color: #94a3b8;
+  }
+  .btn-repo {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    padding: 7px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-repo:hover { background: #334155; color: white; }
+
+  /* Workspace Layout */
+  .workspace {
+    flex: 1;
+    display: flex;
+    padding: 18px 24px;
+    gap: 24px;
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+    align-items: stretch;
+  }
+
+  /* Left Side: Phone Controller */
+  .phone-panel {
+    flex: 0 0 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .panel-caption {
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+  .phone-frame {
+    width: 360px;
+    height: 740px;
+    background: #060913;
+    border: 10px solid #1e293b;
+    border-radius: 44px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.12);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 20px;
+    background: #1e293b;
+    border-radius: 12px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .camera-lens { width: 6px; height: 6px; background: #070b14; border-radius: 50%; border: 1px solid #334155; }
+  .speaker-slit { width: 28px; height: 3px; background: #070b14; border-radius: 2px; }
+
+  /* Phone Internal Screen */
+  .phone-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 32px;
+    background: #060913;
+    color: #f8fafc;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Phone Header */
+  .p-header {
+    background: rgba(13, 20, 36, 0.95);
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+    z-index: 30;
+  }
+  .p-brand { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .p-brand-img { width: 28px; height: 28px; border-radius: 8px; box-shadow: 0 0 10px rgba(56, 189, 248, 0.4); }
+  .p-brand-name { font-size: 13px; font-weight: 800; color: #38bdf8; line-height: 1.1; }
+  .p-profile-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #cbd5e1;
+    margin-top: 2px;
+  }
+  .p-dot { width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; }
+
+  .p-nav-tools { display: flex; gap: 5px; }
+  .p-tool-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(51, 65, 85, 0.7);
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .p-tool-btn:active { background: #38bdf8; color: #0f172a; }
+
+  /* Phone Trackpad */
+  #phone-trackpad {
+    flex: 1;
+    background: radial-gradient(circle at center, #0b1120 0%, #060913 100%);
+    position: relative;
+    cursor: crosshair;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+  }
+  .p-watermark {
+    text-align: center;
+    color: rgba(56, 189, 248, 0.12);
+    pointer-events: none;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+
+  /* Phone Click Row */
+  .p-click-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr;
+    gap: 6px;
+    padding: 6px 10px;
+    background: #060913;
+  }
+  .p-click-btn {
+    background: linear-gradient(180deg, #162035 0%, #0d1526 100%);
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    color: #cbd5e1;
+    padding: 11px 0;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .p-click-btn:active {
+    background: #0284c7;
+    border-color: #38bdf8;
+    color: white;
+    transform: scale(0.97);
+  }
+
+  /* Phone Quick Dock */
+  .p-quick-dock {
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 10px;
+    background: rgba(13, 20, 36, 0.95);
+    border-top: 1px solid rgba(56, 189, 248, 0.15);
+  }
+  .p-dock-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .p-dock-btn:active { background: #38bdf8; color: #0f172a; }
+
+  /* Phone Summon Keyboard Dock */
+  #phone-kb-dock {
+    display: none;
+    background: #0f172a;
+    border-top: 1px solid #334155;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  #phone-kb-input {
+    flex: 1;
+    background: #070b14;
+    border: 1px solid #334155;
+    color: #fff;
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+  }
+  #phone-kb-input:focus { border-color: #38bdf8; }
+
+  /* Phone Modals */
+  .p-modal {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(7, 11, 20, 0.92);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    flex-direction: column;
+    padding: 16px;
+  }
+  .p-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .p-modal-title { font-size: 14px; font-weight: 700; color: #38bdf8; }
+  .p-modal-close { background: none; border: none; color: #94a3b8; font-size: 16px; cursor: pointer; }
+  .p-modal-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .p-modal-btn:hover { background: #334155; }
+
+  /* Right Side: Simulated Computer Monitor */
+  .pc-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 500px;
+  }
+  .monitor-bezel {
+    flex: 1;
+    background: #111827;
+    border: 10px solid #1f2937;
+    border-bottom: 16px solid #1f2937;
+    border-radius: 16px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .monitor-stand { width: 140px; height: 18px; background: #374151; margin: 0 auto; border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
+  .monitor-base { width: 220px; height: 8px; background: #1f2937; margin: 0 auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+
+  /* Virtual Windows Desktop */
+  .desktop-screen {
+    flex: 1;
+    position: relative;
+    background: linear-gradient(135deg, #091e3a 0%, #0d2c52 35%, #184277 70%, #0d1a30 100%);
+    overflow: hidden;
+    user-select: none;
+    cursor: default;
+  }
+  .desktop-wallpaper-glow {
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, transparent 70%);
+    top: 20%;
+    left: 40%;
+    pointer-events: none;
+  }
+
+  /* Virtual Cursor */
+  #virtual-cursor {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(350px, 220px);
+    transition: transform 0.03s linear;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+  }
+  .cursor-ripple {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #38bdf8;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 1;
+    animation: rippleAnim 0.35s ease-out forwards;
+  }
+  @keyframes rippleAnim { to { transform: translate(-50%, -50%) scale(1.6); opacity: 0; } }
+
+  /* Desktop Shortcuts */
+  .desktop-icons {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 5;
+  }
+  .d-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 70px;
+    padding: 6px 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s;
+  }
+  .d-icon:hover { background: rgba(255, 255, 255, 0.1); }
+  .d-icon.selected { background: rgba(56, 189, 248, 0.25); border: 1px solid rgba(56, 189, 248, 0.5); }
+  .d-icon-glyph { font-size: 30px; margin-bottom: 2px; }
+  .d-icon-label { font-size: 11px; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.9); }
+
+  /* Simulated Firefox Window */
+  #sim-browser {
+    position: absolute;
+    top: 50px;
+    left: 120px;
+    width: 540px;
+    height: 360px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 20;
+  }
+  .win-titlebar {
+    background: #1e293b;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #334155;
+  }
+  .win-tab { font-size: 11px; color: #e2e8f0; display: flex; align-items: center; gap: 6px; }
+  .win-controls { display: flex; gap: 6px; }
+  .wc-btn { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .wc-close { background: #ef4444; cursor: pointer; }
+  .wc-min { background: #f59e0b; }
+  .wc-max { background: #10b981; }
+
+  .win-urlbar {
+    background: #111a2e;
+    padding: 5px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #1e293b;
+  }
+  .url-input {
+    flex: 1;
+    background: #070b14;
+    border: 1px solid #334155;
+    color: #94a3b8;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    outline: none;
+  }
+  .win-content {
+    flex: 1;
+    padding: 16px;
+    background: #0a0f1d;
+    overflow-y: auto;
+    color: #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  #browser-search-box {
+    width: 82%;
+    background: #111827;
+    border: 2px solid #0284c7;
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: #fff;
+    font-size: 14px;
+    margin-top: 12px;
+    outline: none;
+    box-shadow: 0 0 15px rgba(2, 132, 199, 0.3);
+  }
+
+  /* Start Menu */
+  #sim-start-menu {
+    position: absolute;
+    bottom: 46px;
+    left: 10px;
+    width: 300px;
+    height: 360px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    display: none;
+    flex-direction: column;
+    padding: 16px;
+    z-index: 50;
+  }
+  .start-header { font-size: 13px; font-weight: 700; color: #38bdf8; margin-bottom: 10px; }
+  .start-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .start-app { background: #1e293b; padding: 10px 4px; border-radius: 8px; text-align: center; font-size: 11px; cursor: pointer; }
+  .start-app:hover { background: #334155; }
+
+  /* Windows Taskbar */
+  .desktop-taskbar {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 42px;
+    background: rgba(12, 18, 32, 0.88);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    z-index: 40;
+  }
+  .tb-left { display: flex; align-items: center; gap: 8px; }
+  .tb-start {
+    width: 30px; height: 30px;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; cursor: pointer;
+  }
+  .tb-start:hover { background: rgba(56, 189, 248, 0.3); }
+  .tb-tray { display: flex; align-items: center; gap: 10px; font-size: 11px; color: #94a3b8; }
+  .fetch-tray-icon { width: 17px; height: 17px; border-radius: 4px; cursor: pointer; filter: drop-shadow(0 0 4px #38bdf8); }
+
+  /* Overlays: Sleep & Lock */
+  #overlay-sleep {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: #020307;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #475569;
+  }
+  .sleep-led {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #d97706; box-shadow: 0 0 12px #d97706;
+    margin-bottom: 12px;
+    animation: sleepPulse 2s infinite ease-in-out;
+  }
+  @keyframes sleepPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+  #overlay-lock {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(15,23,42,0.96), rgba(30,58,138,0.92));
+    backdrop-filter: blur(25px);
+    z-index: 900;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+  }
+
+  /* Packet Log Drawer */
+  .packet-streamer {
+    background: #090e1a;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    margin-top: 10px;
+    padding: 8px 14px;
+    height: 64px;
+    overflow-y: hidden;
+    font-family: monospace;
+    font-size: 11px;
+    color: #38bdf8;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .packet-line { line-height: 1.4; }
+  .packet-tag { color: #22c55e; font-weight: 700; margin-right: 6px; }
+
+  .coords-badge {
+    position: absolute; top: 10px; right: 12px;
+    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
+    color: #94a3b8; padding: 3px 6px; border-radius: 6px;
+    font-size: 10px; font-family: monospace; z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="demo-header">
+  <div class="demo-brand">
+    <img src="icon.png" class="demo-logo" alt="Fetch Logo">
+    <div class="demo-title-group">
+      <h1>🐕 Fetch <span class="demo-badge">Live Interactive Simulator</span></h1>
+      <p class="demo-subtitle">Glide your finger/mouse on the phone trackpad to control the virtual Windows 11 desktop!</p>
+    </div>
+  </div>
+  <div>
+    <a href="https://github.com/Tr1pAc1d/Fetch" target="_blank" class="btn-repo">⭐ View on GitHub</a>
+  </div>
+</header>
+
+<!-- Main Workspace -->
+<div class="workspace">
+  <!-- Left Side: Phone Controller (100% Inline Native DOM) -->
+  <div class="phone-panel">
+    <div class="panel-caption">📱 Mobile Remote Controller (1:1)</div>
+    <div class="phone-frame">
+      <div class="phone-notch">
+        <div class="camera-lens"></div>
+        <div class="speaker-slit"></div>
+      </div>
+
+      <!-- Phone Screen -->
+      <div class="phone-screen">
+        <!-- Phone Nav -->
+        <div class="p-header">
+          <div class="p-brand" onclick="toggleModal('p-profiles-modal')">
+            <img src="icon.png" class="p-brand-img" alt="Husky">
+            <div>
+              <div class="p-brand-name">Fetch</div>
+              <div class="p-profile-pill">
+                <span class="p-dot"></span>
+                <span>Gaming PC</span>
+                <span>▼</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-nav-tools">
+            <button class="p-tool-btn" onclick="toggleModal('p-power-modal')" title="Power & Sleep">⚡</button>
+            <button class="p-tool-btn" onclick="toggleModal('p-links-modal')" title="Firefox Links">🌐</button>
+            <button class="p-tool-btn" onclick="toggleModal('p-guide-modal')" title="Guide">❓</button>
+          </div>
+        </div>
+
+        <!-- Phone Trackpad Surface -->
+        <div id="phone-trackpad">
+          <div class="p-watermark">
+            <svg style="width:36px; height:36px; stroke:#38bdf8; fill:none; opacity:0.3; margin:0 auto 4px auto; display:block;" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/></svg>
+            FETCH TOUCHPAD
+          </div>
+        </div>
+
+        <!-- Phone Keyboard Dock -->
+        <div id="phone-kb-dock">
+          <input type="text" id="phone-kb-input" placeholder="Type here to stream to PC...">
+          <button class="p-dock-btn" onclick="sendKbEnter()" style="background:#0284c7; color:#fff;">↵</button>
+          <button class="p-dock-btn" onclick="sendKbBackspace()">⌫</button>
+          <button class="p-dock-btn" onclick="toggleKeyboard(false)">✕</button>
+        </div>
+
+        <!-- Phone Tactile Click Row -->
+        <div class="p-click-row">
+          <div class="p-click-btn" id="p-btn-left">LEFT</div>
+          <div class="p-click-btn" id="p-btn-mid">MID</div>
+          <div class="p-click-btn" id="p-btn-right">RIGHT</div>
+        </div>
+
+        <!-- Phone Bottom Dock -->
+        <div class="p-quick-dock">
+          <button class="p-dock-btn" onclick="toggleKeyboard()" title="Summon Keyboard">⌨️</button>
+          <button class="p-dock-btn" onclick="dispatchAction({type:'key', key:'win'})" title="Windows Key">🪟</button>
+          <button class="p-dock-btn" onclick="dispatchAction({type:'key', key:'vol_down'})" title="Vol Down">🔉</button>
+          <button class="p-dock-btn" onclick="dispatchAction({type:'key', key:'vol_up'})" title="Vol Up">🔊</button>
+          <button class="p-dock-btn" onclick="toggleModal('p-power-modal')" title="Sleep & WOL">🌙</button>
+        </div>
+
+        <!-- Phone Power Modal -->
+        <div class="p-modal" id="p-power-modal">
+          <div class="p-modal-header">
+            <span class="p-modal-title">⚡ Power & Couch Sleep</span>
+            <button class="p-modal-close" onclick="toggleModal('p-power-modal', false)">✕</button>
+          </div>
+          <div class="p-modal-btn" onclick="dispatchAction({type:'power', action:'sleep'}); toggleModal('p-power-modal', false);">
+            <span>🌙 Put PC to Sleep Now</span><span>Suspend</span>
+          </div>
+          <div class="p-modal-btn" onclick="dispatchAction({type:'power', action:'lock'}); toggleModal('p-power-modal', false);">
+            <span>🔒 Lock Workstation</span><span>Win + L</span>
+          </div>
+          <div class="p-modal-btn" onclick="dispatchAction({type:'power', action:'start_sleep_timer', minutes:30}); toggleModal('p-power-modal', false);">
+            <span>⏱️ 30 Min Couch Sleep Timer</span><span>Scheduled</span>
+          </div>
+          <div class="p-modal-btn" onclick="wakeFromSleep(); toggleModal('p-power-modal', false);" style="border-color:#38bdf8;">
+            <span>⚡ Wake on LAN (WOL)</span><span>Magic Packet</span>
+          </div>
+        </div>
+
+        <!-- Phone Firefox Links Modal -->
+        <div class="p-modal" id="p-links-modal">
+          <div class="p-modal-header">
+            <span class="p-modal-title">🦊 Firefox Quick Links</span>
+            <button class="p-modal-close" onclick="toggleModal('p-links-modal', false)">✕</button>
+          </div>
+          <div class="p-modal-btn" onclick="openSimBrowser('https://youtube.com'); toggleModal('p-links-modal', false);">
+            <span>▶️ YouTube</span><span>Open</span>
+          </div>
+          <div class="p-modal-btn" onclick="openSimBrowser('https://google.com'); toggleModal('p-links-modal', false);">
+            <span>🔍 Google</span><span>Open</span>
+          </div>
+          <div class="p-modal-btn" onclick="openSimBrowser('https://reddit.com'); toggleModal('p-links-modal', false);">
+            <span>💬 Reddit</span><span>Open</span>
+          </div>
+          <div class="p-modal-btn" onclick="openSimBrowser('https://github.com'); toggleModal('p-links-modal', false);">
+            <span>🐙 GitHub</span><span>Open</span>
+          </div>
+        </div>
+
+        <!-- Phone Guide Modal -->
+        <div class="p-modal" id="p-guide-modal">
+          <div class="p-modal-header">
+            <span class="p-modal-title">❓ Built-in Help</span>
+            <button class="p-modal-close" onclick="toggleModal('p-guide-modal', false)">✕</button>
+          </div>
+          <div style="font-size:11px; color:#cbd5e1; line-height:1.5;">
+            <b>1. Trackpad:</b> 1-finger glide moves cursor, tap left-clicks, 2-finger scroll.<br><br>
+            <b>2. Keyboard:</b> Tap ⌨️ to summon keyboard and stream keystrokes directly to PC cursor.<br><br>
+            <b>3. Living Room:</b> Use Couch Sleep Timer before sleeping to movies.
+          </div>
+        </div>
+
+        <!-- Phone Profiles Modal -->
+        <div class="p-modal" id="p-profiles-modal">
+          <div class="p-modal-header">
+            <span class="p-modal-title">🖥️ PC Profiles</span>
+            <button class="p-modal-close" onclick="toggleModal('p-profiles-modal', false)">✕</button>
+          </div>
+          <div class="p-modal-btn" onclick="toggleModal('p-profiles-modal', false)">
+            <span>🟢 Living Room Desktop</span><span>Connected</span>
+          </div>
+          <div class="p-modal-btn" onclick="toggleModal('p-profiles-modal', false)">
+            <span>⚪ Office Laptop</span><span>192.168.1.45</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Simulated PC Monitor -->
+  <div class="pc-panel">
+    <div class="panel-caption">🖥️ Virtual PC Monitor (Windows 11 Target)</div>
+    <div class="monitor-bezel">
+      <div class="desktop-screen" id="desktop">
+        <div class="desktop-wallpaper-glow"></div>
+        <div class="coords-badge" id="coords">Cursor: X: 350, Y: 220</div>
+
+        <!-- Virtual Cursor -->
+        <svg id="virtual-cursor" viewBox="0 0 24 24">
+          <path fill="#ffffff" stroke="#000000" stroke-width="1.2" d="M3 2l6 17 2.8-5.5L18 20l2.5-1.5-6.2-6.5L20 9z"/>
+        </svg>
+
+        <!-- Desktop Icons -->
+        <div class="desktop-icons">
+          <div class="d-icon" id="icon-firefox" onclick="openSimBrowser()">
+            <div class="d-icon-glyph">🦊</div>
+            <div class="d-icon-label">Firefox</div>
+          </div>
+          <div class="d-icon" id="icon-steam" onclick="flashIcon(this)">
+            <div class="d-icon-glyph">🎮</div>
+            <div class="d-icon-label">Steam Deck</div>
+          </div>
+          <div class="d-icon" id="icon-files" onclick="flashIcon(this)">
+            <div class="d-icon-glyph">📁</div>
+            <div class="d-icon-label">My PC</div>
+          </div>
+          <div class="d-icon" id="icon-trash" onclick="flashIcon(this)">
+            <div class="d-icon-glyph">🗑️</div>
+            <div class="d-icon-label">Recycle Bin</div>
+          </div>
+        </div>
+
+        <!-- Simulated Firefox Browser Window -->
+        <div id="sim-browser">
+          <div class="win-titlebar">
+            <div class="win-tab" id="browser-tab-title">🦊 Google Search — Mozilla Firefox</div>
+            <div class="win-controls">
+              <span class="wc-btn wc-min"></span>
+              <span class="wc-btn wc-max"></span>
+              <span class="wc-btn wc-close" onclick="closeSimBrowser()"></span>
+            </div>
+          </div>
+          <div class="win-urlbar">
+            <span style="font-size:12px; color:#38bdf8;">🔒</span>
+            <input type="text" class="url-input" id="browser-url" value="https://google.com" readonly>
+          </div>
+          <div class="win-content" id="browser-content">
+            <div style="font-size:36px; font-weight:800; letter-spacing:-1px; margin-bottom:6px;">
+              <span style="color:#38bdf8;">G</span><span style="color:#ef4444;">o</span><span style="color:#f59e0b;">o</span><span style="color:#38bdf8;">g</span><span style="color:#10b981;">l</span><span style="color:#ef4444;">e</span>
+            </div>
+            <p style="font-size:12px; color:#94a3b8;">Click "⌨️" on the phone remote to stream text here in real time!</p>
+            <input type="text" id="browser-search-box" placeholder="Type with phone keyboard...">
+          </div>
+        </div>
+
+        <!-- Start Menu -->
+        <div id="sim-start-menu">
+          <div class="start-header">🪟 Windows Start</div>
+          <div style="font-size:11px; color:#94a3b8;">Pinned Applications:</div>
+          <div class="start-grid">
+            <div class="start-app" onclick="openSimBrowser()">🦊 Firefox</div>
+            <div class="start-app" onclick="flashIcon(this)">📁 Files</div>
+            <div class="start-app" onclick="flashIcon(this)">⚙️ Settings</div>
+            <div class="start-app" onclick="flashIcon(this)">🎮 Steam</div>
+            <div class="start-app" onclick="flashIcon(this)">🎵 Spotify</div>
+            <div class="start-app" onclick="simulateSleep()">🌙 Sleep PC</div>
+          </div>
+        </div>
+
+        <!-- Sleep Overlay -->
+        <div id="overlay-sleep">
+          <div class="sleep-led"></div>
+          <h2 style="font-size:20px; color:#cbd5e1; margin-bottom:4px;">PC in Low-Power Sleep Mode</h2>
+          <p style="font-size:12px; color:#64748b; margin-bottom:14px;">Move mouse on phone or tap ⚡ WOL to wake this workstation.</p>
+          <button onclick="wakeFromSleep()" style="background:#0284c7; color:white; border:none; padding:8px 18px; border-radius:8px; font-weight:700; cursor:pointer;">⚡ Wake Workstation (WOL)</button>
+        </div>
+
+        <!-- Lock Overlay -->
+        <div id="overlay-lock">
+          <div style="font-size:52px; font-weight:300; margin-bottom:4px;" id="lock-clock">10:20</div>
+          <p style="font-size:14px; color:#94a3b8; margin-bottom:20px;">Friday, October 9</p>
+          <div style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:50%; width:64px; height:64px; display:flex; align-items:center; justify-content:center; margin-bottom:10px; font-size:26px;">👤</div>
+          <h3 style="font-size:15px; margin-bottom:12px;">TAB inc. Administrator</h3>
+          <button onclick="unlockWorkstation()" style="background:#38bdf8; color:#0f172a; border:none; padding:8px 20px; border-radius:8px; font-weight:700; cursor:pointer;">Unlock (Win + L)</button>
+        </div>
+
+        <!-- Taskbar -->
+        <div class="desktop-taskbar">
+          <div class="tb-left">
+            <div class="tb-start" onclick="toggleStartMenu()" title="Start">🪟</div>
+            <div class="tb-start" onclick="openSimBrowser()" title="Mozilla Firefox">🦊</div>
+            <div class="tb-start" onclick="flashIcon(this)" title="File Explorer">📁</div>
+          </div>
+          <div class="tb-tray">
+            <img src="icon.png" class="fetch-tray-icon" title="Fetch Server (Active in System Tray)" onclick="alert('🐕 Fetch Host is active and connected to your phone!')">
+            <span>📶</span>
+            <span>🔊</span>
+            <span id="tb-clock">10:20 AM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="monitor-stand"></div>
+    <div class="monitor-base"></div>
+
+    <!-- Packet Streamer Log -->
+    <div class="packet-streamer" id="log-box">
+      <div class="packet-line"><span class="packet-tag">[READY]</span> WebSocket server active on port 8765. Glide finger on phone trackpad to control cursor!</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Cursor Coordinates
+  let curX = 350;
+  let curY = 220;
+  const cursorElem = document.getElementById('virtual-cursor');
+  const desktop = document.getElementById('desktop');
+  const coordsLabel = document.getElementById('coords');
+  const logBox = document.getElementById('log-box');
+
+  function updateClock() {
+    const d = new Date();
+    const str = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('tb-clock').innerText = str;
+    document.getElementById('lock-clock').innerText = str;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  function logPacket(tag, text) {
+    const div = document.createElement('div');
+    div.className = 'packet-line';
+    const time = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    div.innerHTML = `<span class="packet-tag">[${time} ${tag}]</span> ${text}`;
+    logBox.prepend(div);
+    if (logBox.children.length > 25) logBox.removeChild(logBox.lastChild);
+  }
+
+  function setCursor(x, y) {
+    const bounds = desktop.getBoundingClientRect();
+    curX = Math.max(0, Math.min(bounds.width - 16, x));
+    curY = Math.max(0, Math.min(bounds.height - 30, y));
+    cursorElem.style.transform = `translate(${curX}px, ${curY}px)`;
+    coordsLabel.innerText = `Cursor: X: ${Math.round(curX)}, Y: ${Math.round(curY)}`;
+  }
+
+  // Master Action Dispatcher: Connects phone inputs directly to virtual PC desktop
+  function dispatchAction(data) {
+    if (!data) return;
+    const type = data.type;
+
+    if (type === 'move') {
+      const dx = data.dx || 0;
+      const dy = data.dy || 0;
+      setCursor(curX + dx, curY + dy);
+      logPacket('WS-RX', `{"type":"move", "dx":${dx}, "dy":${dy}}`);
+      wakeFromSleep();
+    }
+    else if (type === 'click') {
+      logPacket('CLICK', `Button: ${data.btn || 'left'}`);
+      spawnRipple(curX, curY);
+      checkDesktopClick(curX, curY);
+    }
+    else if (type === 'down') {
+      logPacket('MOUSEDOWN', `Button: ${data.btn || 'left'}`);
+      spawnRipple(curX, curY);
+    }
+    else if (type === 'scroll') {
+      logPacket('SCROLL', `Delta: ${data.dy}`);
+      const content = document.getElementById('browser-content');
+      if (content) content.scrollTop += -(data.dy * 30);
+    }
+    else if (type === 'text') {
+      logPacket('TEXT', `Typed: "${data.text}"`);
+      const searchBox = document.getElementById('browser-search-box');
+      if (searchBox) {
+        searchBox.value += data.text;
+        searchBox.focus();
+      }
+    }
+    else if (type === 'key') {
+      logPacket('KEY', `Key Action: "${data.key}"`);
+      if (data.key === 'win') toggleStartMenu();
+      else if (data.key === 'backspace') {
+        const searchBox = document.getElementById('browser-search-box');
+        if (searchBox) searchBox.value = searchBox.value.slice(0, -1);
+      }
+      else if (data.key === 'enter') {
+        const searchBox = document.getElementById('browser-search-box');
+        if (searchBox && searchBox.value.trim()) {
+          alert(`🔍 Google search query simulated: "${searchBox.value}"`);
+        }
+      }
+    }
+    else if (type === 'power') {
+      logPacket('POWER', `Action: ${data.action} ${data.minutes ? '('+data.minutes+'m)' : ''}`);
+      if (data.action === 'sleep') simulateSleep();
+      else if (data.action === 'lock') simulateLock();
+    }
+  }
+
+  function spawnRipple(x, y) {
+    const r = document.createElement('div');
+    r.className = 'cursor-ripple';
+    r.style.left = (x + 4) + 'px';
+    r.style.top = (y + 4) + 'px';
+    desktop.appendChild(r);
+    setTimeout(() => r.remove(), 350);
+  }
+
+  function checkDesktopClick(x, y) {
+    const win = document.getElementById('sim-browser');
+    const winRect = win.getBoundingClientRect();
+    const dRect = desktop.getBoundingClientRect();
+    const relX = dRect.left + x;
+    const relY = dRect.top + y;
+
+    if (relX >= winRect.left && relX <= winRect.right && relY >= winRect.top && relY <= winRect.bottom) {
+      document.getElementById('browser-search-box').focus();
+      return;
+    }
+
+    if (y >= dRect.height - 44 && x <= 45) {
+      toggleStartMenu();
+      return;
+    }
+
+    if (x >= 20 && x <= 90 && y >= 20 && y <= 90) {
+      openSimBrowser();
+      return;
+    }
+  }
+
+  function openSimBrowser(url = 'https://google.com') {
+    const win = document.getElementById('sim-browser');
+    win.style.display = 'flex';
+    document.getElementById('browser-url').value = url;
+    document.getElementById('browser-tab-title').innerText = `🦊 ${url.replace('https://', '')} — Mozilla Firefox`;
+    document.getElementById('browser-search-box').focus();
+    logPacket('APP', `Opened Firefox [${url}]`);
+  }
+
+  function closeSimBrowser() {
+    document.getElementById('sim-browser').style.display = 'none';
+  }
+
+  function toggleStartMenu() {
+    const m = document.getElementById('sim-start-menu');
+    m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+  }
+
+  function flashIcon(elem) {
+    elem.classList.add('selected');
+    setTimeout(() => elem.classList.remove('selected'), 500);
+  }
+
+  function simulateSleep() { document.getElementById('overlay-sleep').style.display = 'flex'; }
+  function wakeFromSleep() { document.getElementById('overlay-sleep').style.display = 'none'; }
+  function simulateLock() { document.getElementById('overlay-lock').style.display = 'flex'; }
+  function unlockWorkstation() { document.getElementById('overlay-lock').style.display = 'none'; }
+
+  // -------------------------------------------------------------
+  // Phone Trackpad Touch / Mouse Drag Handling
+  // -------------------------------------------------------------
+  const pad = document.getElementById('phone-trackpad');
+  let lastX = null, lastY = null;
+  let isPadDown = false;
+  let hasMoved = false;
+
+  function onPadStart(clientX, clientY) {
+    isPadDown = true;
+    hasMoved = false;
+    lastX = clientX;
+    lastY = clientY;
+  }
+
+  function onPadMove(clientX, clientY) {
+    if (!isPadDown || lastX === null || lastY === null) return;
+    const dx = clientX - lastX;
+    const dy = clientY - lastY;
+    if (Math.abs(dx) > 0 || Math.abs(dy) > 0) {
+      hasMoved = true;
+      dispatchAction({ type: 'move', dx: Math.round(dx * 1.5), dy: Math.round(dy * 1.5) });
+    }
+    lastX = clientX;
+    lastY = clientY;
+  }
+
+  function onPadEnd() {
+    if (isPadDown && !hasMoved) {
+      dispatchAction({ type: 'click', btn: 'left' });
+    }
+    isPadDown = false;
+    lastX = null;
+    lastY = null;
+  }
+
+  // Mouse Listeners
+  pad.addEventListener('mousedown', (e) => { e.preventDefault(); onPadStart(e.clientX, e.clientY); });
+  window.addEventListener('mousemove', (e) => { if (isPadDown) onPadMove(e.clientX, e.clientY); });
+  window.addEventListener('mouseup', () => { if (isPadDown) onPadEnd(); });
+
+  // Touch Listeners (Mobile / Touchscreen)
+  pad.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (e.touches.length > 0) onPadStart(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+  pad.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (e.touches.length > 0) onPadMove(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+  pad.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    onPadEnd();
+  }, { passive: false });
+
+  // Phone Click Buttons
+  const bL = document.getElementById('p-btn-left');
+  const bM = document.getElementById('p-btn-mid');
+  const bR = document.getElementById('p-btn-right');
+
+  bL.addEventListener('click', () => dispatchAction({ type: 'click', btn: 'left' }));
+  bM.addEventListener('click', () => dispatchAction({ type: 'click', btn: 'middle' }));
+  bR.addEventListener('click', () => dispatchAction({ type: 'click', btn: 'right' }));
+
+  // Phone Keyboard Dock Logic
+  const kbDock = document.getElementById('phone-kb-dock');
+  const kbInput = document.getElementById('phone-kb-input');
+
+  function toggleKeyboard(force) {
+    const isShowing = force !== undefined ? !force : (kbDock.style.display === 'flex');
+    kbDock.style.display = isShowing ? 'none' : 'flex';
+    if (!isShowing) kbInput.focus();
+  }
+
+  kbInput.addEventListener('input', (e) => {
+    if (e.data) {
+      dispatchAction({ type: 'text', text: e.data });
+    }
+  });
+
+  function sendKbEnter() {
+    dispatchAction({ type: 'key', key: 'enter' });
+  }
+
+  function sendKbBackspace() {
+    dispatchAction({ type: 'key', key: 'backspace' });
+  }
+
+  function toggleModal(id, open = true) {
+    const m = document.getElementById(id);
+    if (m) m.style.display = open ? 'flex' : 'none';
+  }
+
+  // Set initial cursor
+  setCursor(350, 220);
+</script>
+</body>
+</html>
