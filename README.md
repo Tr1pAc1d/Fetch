@@ -7,7 +7,7 @@
 **Created and Published by [TAB inc.](https://github.com/Tr1pAc1d)**
 
 [![Release](https://img.shields.io/badge/Release-v1.0.0-38bdf8?style=for-the-badge&logo=github)](https://github.com/Tr1pAc1d)
-[![License](https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-All_Rights_Reserved-ef4444?style=for-the-badge)](LICENSE)
 [![Privacy](https://img.shields.io/badge/Privacy-Zero_Telemetry-a855f7?style=for-the-badge)](PRIVACY.md)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows_%7C_XP%2FVista_%7C_Linux_%7C_Android-f59e0b?style=for-the-badge)]()
 
@@ -160,6 +160,7 @@ C:\Windows\Microsoft.NET\Framework\v2.0.50727\csc.exe /target:winexe /optimize+ 
 ---
 
 ## 📜 License
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more details.
+Copyright &copy; 2026 **TAB inc.** All Rights Reserved.  
+Proprietary software. Unauthorized copying, distribution, modification, reverse engineering, or commercial use is strictly prohibited. See [`LICENSE`](LICENSE) for complete terms.
 
 **Fetch** is proudly built and maintained by **TAB inc.** 🐕
