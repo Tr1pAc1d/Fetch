@@ -1,0 +1,41 @@
+# ==========================================
+# Fetch Git Ignore Configuration
+# Publisher: TAB inc.
+# ==========================================
+
+# Operating System Files
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.tmp
+*.bak
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.spec
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Android & Gradle
+.gradle/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/*.iml
+android/app/*.iml
+.idea/
+*.log
+
+# C# / .NET Temporary Files
+obj/
+bin/
+*.user
+*.suo
+*.userprefs

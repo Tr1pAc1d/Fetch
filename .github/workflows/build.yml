@@ -1,0 +1,54 @@
+name: Build Fetch Release Suite
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x android/gradlew || true
+
+      - name: Build Debug APK
+        working-directory: android
+        run: gradle assembleDebug --no-daemon
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fetch-Android-APK
+          path: android/app/build/outputs/apk/debug/*.apk
+
+  build-windows-legacy:
+    name: Build Windows XP/Vista Legacy Server
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Compile Legacy C# Win32 Server (.NET 3.5 / 2.0)
+        run: |
+          C:\Windows\Microsoft.NET\Framework\v3.5\csc.exe /target:winexe /optimize+ /platform:anycpu /win32icon:assets/icon.ico /out:Fetch-Server-Legacy.exe server_legacy/FetchServerLegacy.cs
+
+      - name: Upload Legacy Server Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fetch-Server-Legacy-Win32
+          path: Fetch-Server-Legacy.exe
