@@ -9,12 +9,14 @@
 [![Release](https://img.shields.io/badge/Release-v1.0.0-38bdf8?style=for-the-badge&logo=github)](https://github.com/Tr1pAc1d)
 [![License](https://img.shields.io/badge/License-All_Rights_Reserved-ef4444?style=for-the-badge)](LICENSE)
 [![Privacy](https://img.shields.io/badge/Privacy-Zero_Telemetry-a855f7?style=for-the-badge)](PRIVACY.md)
-[![Platforms](https://img.shields.io/badge/Platforms-Windows_%7C_XP%2FVista_%7C_Linux_%7C_Android-f59e0b?style=for-the-badge)]()
+[![Live Demo](https://img.shields.io/badge/🎮_Live_Interactive_Demo-Try_in_Browser-22c55e?style=for-the-badge)](demo/index.html)
 
 <p align="center">
   <b>Turn your Android smartphone or tablet into a high-precision, zero-lag trackpad, keyboard, and couch controller for your computer.</b><br/>
   <i>No accounts. No subscriptions. No ads. 100% local Wi-Fi communication.</i>
 </p>
+
+> 🎮 **Try It in Your Browser:** Test the **[Live Interactive Web Simulator](demo/index.html)** — steer a virtual Windows 11 desktop, type into search bars, and test couch sleep timers using the 1:1 phone remote right now!
 
 </div>
 
@@ -42,6 +44,7 @@ Fetch consists of two simple parts:
 | Your Controller Device | Download Link | Size | Description |
 | :--- | :--- | :--- | :--- |
 | **Android Phone / Tablet** (Most Popular) | **[Fetch-Remote-Android.apk](https://github.com/Tr1pAc1d/Fetch/releases)** | ~3.8 MB | Full mobile controller with Trackpad, Air-Mouse, Sleep Timer, and WOL. |
+| **Steam Deck & Linux Handhelds** | **[Fetch-Remote-SteamDeck.zip](https://github.com/Tr1pAc1d/Fetch/releases)** | ~650 KB | **SteamOS Gaming Mode app! Use Deck thumbsticks, triggers, and haptic rumble to control your PC.** |
 | **Windows Laptop / Surface / Tablet** | **[Fetch-Remote-Windows.exe](https://github.com/Tr1pAc1d/Fetch/releases)** | ~14.9 MB | Turns any secondary laptop or Surface touchscreen into a giant wireless trackpad! |
 | **Linux Laptop / Netbook** | **[Fetch-Remote-Linux.zip](https://github.com/Tr1pAc1d/Fetch/releases)** | ~650 KB | Desktop touchpad client for Linux portables and laptops. |
 
@@ -50,6 +53,18 @@ Fetch consists of two simple parts:
 ---
 
 ## ✨ Features at a Glance
+
+### 🎮 Steam Deck & Linux Handheld Mode
+* **Physical Thumbstick Steering**: Dual analog thumbsticks mapped to mouse cursor movement with custom acceleration curves and zero-drift deadzones.
+* **Full Gamepad Controls**:
+  * **A Button / RT**: Left Click (tap or hold to drag).
+  * **B Button / LT**: Right Click.
+  * **LB / RB**: Smooth page scrolling up and down.
+  * **X / Y**: Summon Keyboard / Middle Click.
+  * **D-Pad**: Volume Up/Down, Tab, and Alt+Tab.
+  * **Menu / Start**: Summon the Power & Couch Sleep Timer deck.
+* **Dual-Rumble Haptics**: Steam Deck haptic actuators trigger subtle tactile clicks on every button press.
+* **SteamOS 1-Click Installer**: Run `install_steam_deck.sh` to add Fetch Remote directly to Steam as a Non-Steam Game in Gaming Mode.
 
 ### 🎯 Precision Trackpad & Multi-Touch
 * **1-Finger Glide**: Smooth, zero-latency cursor control mapped 1:1 with hardware precision.
@@ -84,11 +99,11 @@ Fetch connects over your local router with zero cloud relay servers:
 
 ```mermaid
 flowchart TD
-    Phone["📱 Android Client (Fetch.apk)"]
+    Phone["📱 Remote Device (Phone / Deck / Laptop)"]
     Router{{"📶 Local Wi-Fi Router"}}
-    WinModern["💻 Windows 10/11 Host (Fetch-Server.exe)"]
-    WinLegacy["💾 Windows XP/Vista Host (Fetch-Server-Legacy.exe)"]
-    LinuxDeck["🐧 Linux / Steam Deck (fetch.service)"]
+    WinModern["💻 Windows 11 / 10 Host"]
+    WinLegacy["💾 Windows XP / Vista Host"]
+    LinuxDeck["🐧 Linux / Steam Deck Host"]
 
     Phone -->|"UDP Beacon 8766 (Auto-Discovery)"| Router
     Router --> WinModern
@@ -99,10 +114,10 @@ flowchart TD
     WinLegacy -->|"FETCH_OFFER (Hostname, IP, MAC)"| Phone
     LinuxDeck -->|"FETCH_OFFER (Hostname, IP, MAC)"| Phone
 
-    Phone <==|"RFC 6455 WebSocket 8765 (Low Latency Input)"| Router
-    Router <==> WinModern
-    Router <==> WinLegacy
-    Router <==> LinuxDeck
+    Phone <-->|"WebSocket 8765 (Zero-Lag Input)"| Router
+    Router <--> WinModern
+    Router <--> WinLegacy
+    Router <--> LinuxDeck
 ```
 
 ---

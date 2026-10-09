@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Fetch Remote
+Comment=Use your Steam Deck as a wireless touchpad & PC controller
+Exec=bash -c "cd %k && ./start_deck.sh"
+Icon=icon
+Terminal=false
+Type=Application
+Categories=Utility;Game;
+Path=%k
+StartupNotify=true

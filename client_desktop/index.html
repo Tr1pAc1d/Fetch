@@ -649,6 +649,49 @@
     transition: opacity 0.2s;
   }
   .btn-submit:active { opacity: 0.85; }
+
+  /* Steam Deck & Landscape Handheld Layout */
+  .deck-pill {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: rgba(168, 85, 247, 0.15);
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    color: #c084fc;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+  }
+  .deck-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #a855f7;
+    box-shadow: 0 0 6px #a855f7;
+  }
+  @media (min-width: 600px) and (orientation: landscape) {
+    body {
+      padding: 8px 16px;
+      gap: 8px;
+    }
+    .click-row {
+      padding: 0;
+      gap: 12px;
+    }
+    .click-btn {
+      padding: 16px 0;
+      font-size: 14px;
+    }
+    .quick-dock {
+      padding: 8px 12px;
+    }
+    .dock-icon-btn {
+      width: 44px;
+      height: 44px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -665,6 +708,11 @@
         <svg class="chevron-svg" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
     </div>
+  </div>
+
+  <div id="deck-badge" class="deck-pill" title="Handheld Gamepad Active">
+    <span class="deck-pulse"></span>
+    <span id="deck-label">🎮 DECK</span>
   </div>
 
   <div class="nav-tools">
@@ -1351,13 +1399,18 @@
     setStatus('searching');
 
     try {
+      if (window.parent && window.parent !== window && window.parent.onSimulatorMessage) {
+        setStatus('connected');
+      }
       ws = new WebSocket('ws://' + ip + ':' + port);
       ws.onopen = () => {
         setStatus('connected');
         vibrate(35);
       };
       ws.onclose = () => {
-        setStatus('');
+        if (!window.parent || window.parent === window || !window.parent.onSimulatorMessage) {
+          setStatus('');
+        }
         setTimeout(() => {
           if (currentTarget && currentTarget.ip === ip && (!ws || ws.readyState === WebSocket.CLOSED)) {
             connect(currentTarget.ip, currentTarget.port || 8765);
@@ -1366,11 +1419,16 @@
       };
       ws.onerror = () => ws.close();
     } catch(e) {
-      setStatus('');
+      if (!window.parent || window.parent === window || !window.parent.onSimulatorMessage) {
+        setStatus('');
+      }
     }
   }
 
   function send(data) {
+    if (window.parent && window.parent !== window && window.parent.onSimulatorMessage) {
+      window.parent.onSimulatorMessage(data);
+    }
     if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(data));
   }
   function sendKey(key) {
@@ -1601,12 +1659,159 @@
   bR.addEventListener('touchstart', (e) => { e.preventDefault(); vibrate(35); send({ type: 'down', btn: 'right' }); });
   bR.addEventListener('touchend', (e) => { e.preventDefault(); send({ type: 'up', btn: 'right' }); });
 
+  // -------------------------------------------------------------
+  // Steam Deck & Handheld Gamepad API Engine
+  // -------------------------------------------------------------
+  let gamepadConnected = false;
+  let lastButtonStates = {};
+  let gpLoopRunning = false;
+
+  window.addEventListener('gamepadconnected', (e) => {
+    gamepadConnected = true;
+    const badge = document.getElementById('deck-badge');
+    const label = document.getElementById('deck-label');
+    if (badge) badge.style.display = 'flex';
+    if (label) label.innerText = `🎮 ${e.gamepad.id && e.gamepad.id.includes('Steam') ? 'STEAM DECK' : 'GAMEPAD'}`;
+    vibrate(40);
+    if (!gpLoopRunning) {
+      gpLoopRunning = true;
+      requestAnimationFrame(gamepadLoop);
+    }
+  });
+
+  window.addEventListener('gamepaddisconnected', () => {
+    gamepadConnected = false;
+    const badge = document.getElementById('deck-badge');
+    if (badge) badge.style.display = 'none';
+  });
+
+  function checkGamepads() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i] && gamepads[i].connected) {
+        if (!gamepadConnected) {
+          gamepadConnected = true;
+          const badge = document.getElementById('deck-badge');
+          if (badge) badge.style.display = 'flex';
+        }
+        if (!gpLoopRunning) {
+          gpLoopRunning = true;
+          requestAnimationFrame(gamepadLoop);
+        }
+        return;
+      }
+    }
+  }
+
+  function gamepadLoop() {
+    const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+    let gp = null;
+    for (let i = 0; i < gamepads.length; i++) {
+      if (gamepads[i] && gamepads[i].connected) { gp = gamepads[i]; break; }
+    }
+
+    if (gp) {
+      // 1. Dual Thumbsticks Cursor Steering with Deadzone
+      const deadzone = 0.12;
+      let rawX = 0, rawY = 0;
+      if (Math.abs(gp.axes[0] || 0) > deadzone) rawX = gp.axes[0];
+      else if (gp.axes.length > 2 && Math.abs(gp.axes[2] || 0) > deadzone) rawX = gp.axes[2];
+
+      if (Math.abs(gp.axes[1] || 0) > deadzone) rawY = gp.axes[1];
+      else if (gp.axes.length > 3 && Math.abs(gp.axes[3] || 0) > deadzone) rawY = gp.axes[3];
+
+      if (rawX !== 0 || rawY !== 0) {
+        const speed = 24 * sensitivity;
+        const signX = rawX > 0 ? 1 : -1;
+        const signY = rawY > 0 ? 1 : -1;
+        const dx = Math.round(signX * Math.pow(Math.abs(rawX), 1.6) * speed);
+        const dy = Math.round(signY * Math.pow(Math.abs(rawY), 1.6) * speed);
+        send({ type: 'move', dx: dx, dy: dy });
+      }
+
+      function checkBtn(idx, onDown, onUp) {
+        const btn = gp.buttons[idx];
+        const pressed = btn ? (typeof btn === 'object' ? btn.pressed : btn > 0.5) : false;
+        const wasPressed = !!lastButtonStates[idx];
+        if (pressed && !wasPressed) {
+          if (onDown) onDown();
+        } else if (!pressed && wasPressed) {
+          if (onUp) onUp();
+        }
+        lastButtonStates[idx] = pressed;
+      }
+
+      // A (0): Left Click
+      checkBtn(0, () => { send({ type: 'down', btn: 'left' }); triggerGpHaptic(gp, 30); },
+                  () => { send({ type: 'up', btn: 'left' }); });
+
+      // B (1): Right Click
+      checkBtn(1, () => { send({ type: 'down', btn: 'right' }); triggerGpHaptic(gp, 35); },
+                  () => { send({ type: 'up', btn: 'right' }); });
+
+      // X (2): Summon Keyboard / Enter
+      checkBtn(2, () => { toggleKeyboard(); triggerGpHaptic(gp, 25); });
+
+      // Y (3): Middle Click
+      checkBtn(3, () => { send({ type: 'click', btn: 'middle' }); triggerGpHaptic(gp, 30); });
+
+      // LB (4): Scroll Up
+      checkBtn(4, () => { send({ type: 'scroll', dy: 2.0 }); triggerGpHaptic(gp, 20); });
+
+      // RB (5): Scroll Down
+      checkBtn(5, () => { send({ type: 'scroll', dy: -2.0 }); triggerGpHaptic(gp, 20); });
+
+      // LT (6) & RT (7): Analog Triggers
+      checkBtn(6, () => { send({ type: 'down', btn: 'left' }); triggerGpHaptic(gp, 35); },
+                  () => { send({ type: 'up', btn: 'left' }); });
+      checkBtn(7, () => { send({ type: 'down', btn: 'right' }); triggerGpHaptic(gp, 35); },
+                  () => { send({ type: 'up', btn: 'right' }); });
+
+      // D-Pad Up / Down: Volume
+      checkBtn(12, () => { sendKey('vol_up'); triggerGpHaptic(gp, 20); });
+      checkBtn(13, () => { sendKey('vol_down'); triggerGpHaptic(gp, 20); });
+
+      // D-Pad Left / Right: Tab / Alt+Tab
+      checkBtn(14, () => { sendKey('tab'); triggerGpHaptic(gp, 20); });
+      checkBtn(15, () => { sendKey('alt_tab'); triggerGpHaptic(gp, 25); });
+
+      // Select / Back (8): Escape
+      checkBtn(8, () => { sendKey('esc'); triggerGpHaptic(gp, 25); });
+
+      // Start / Menu (9): Open Power Deck
+      checkBtn(9, () => { openPowerModal(); triggerGpHaptic(gp, 30); });
+    }
+
+    if (gamepadConnected) {
+      requestAnimationFrame(gamepadLoop);
+    } else {
+      gpLoopRunning = false;
+    }
+  }
+
+  function triggerGpHaptic(gp, durationMs = 30) {
+    if (gp && gp.vibrationActuator && gp.vibrationActuator.playEffect) {
+      try {
+        gp.vibrationActuator.playEffect('dual-rumble', {
+          startDelay: 0,
+          duration: durationMs,
+          weakMagnitude: 0.4,
+          strongMagnitude: 0.2
+        });
+      } catch(e) {}
+    } else {
+      vibrate(durationMs);
+    }
+  }
+
   window.addEventListener('DOMContentLoaded', () => {
     if (currentTarget) {
       activeProfileLabel.innerText = currentTarget.name;
       connect(currentTarget.ip, currentTarget.port || 8765);
     }
     rescanNetwork();
+    checkGamepads();
+    setInterval(checkGamepads, 1500);
   });
 </script>
 </body>

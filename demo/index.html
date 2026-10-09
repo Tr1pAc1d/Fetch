@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fetch - Live Interactive Web Demo (TAB inc.)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  body {
+    background: #060911;
+    color: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .demo-header {
+    background: #0c1220;
+    border-bottom: 1px solid #1e293b;
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+  }
+  .demo-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .demo-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+  .demo-title-group h1 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .demo-badge {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .demo-subtitle {
+    font-size: 12px;
+    color: #94a3b8;
+  }
+  .demo-links {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .btn-repo {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    padding: 7px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .btn-repo:hover { background: #334155; color: white; }
+
+  /* Main Workspace */
+  .workspace {
+    flex: 1;
+    display: flex;
+    padding: 20px 24px;
+    gap: 24px;
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+    align-items: stretch;
+  }
+
+  /* Left Panel: Phone Remote */
+  .phone-panel {
+    flex: 0 0 410px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .panel-caption {
+    font-size: 12px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .phone-frame {
+    width: 390px;
+    height: 780px;
+    background: #090e1a;
+    border: 10px solid #1e293b;
+    border-radius: 46px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .phone-notch {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 24px;
+    background: #1e293b;
+    border-radius: 14px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .camera-lens {
+    width: 8px;
+    height: 8px;
+    background: #070b14;
+    border-radius: 50%;
+    border: 1px solid #334155;
+  }
+  .speaker-slit {
+    width: 32px;
+    height: 3px;
+    background: #070b14;
+    border-radius: 2px;
+  }
+  .phone-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #070b14;
+  }
+
+  /* Right Panel: Simulated PC Monitor */
+  .pc-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 500px;
+  }
+  .monitor-bezel {
+    flex: 1;
+    background: #111827;
+    border: 12px solid #1f2937;
+    border-bottom: 18px solid #1f2937;
+    border-radius: 16px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .monitor-stand {
+    width: 140px;
+    height: 20px;
+    background: #374151;
+    margin: 0 auto;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+  .monitor-base {
+    width: 240px;
+    height: 10px;
+    background: #1f2937;
+    margin: 0 auto;
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+  }
+
+  /* Virtual Windows Desktop */
+  .desktop-screen {
+    flex: 1;
+    position: relative;
+    background: linear-gradient(135deg, #091e3a 0%, #0d2c52 35%, #184277 70%, #0d1a30 100%);
+    overflow: hidden;
+    user-select: none;
+    cursor: default;
+  }
+  .desktop-wallpaper-glow {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.25) 0%, transparent 70%);
+    top: 20%;
+    left: 40%;
+    pointer-events: none;
+  }
+
+  /* Virtual Cursor */
+  #virtual-cursor {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(0, 0);
+    transition: transform 0.04s linear;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.6));
+  }
+  .cursor-ripple {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid #38bdf8;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 1;
+    animation: rippleAnim 0.4s ease-out forwards;
+  }
+  @keyframes rippleAnim {
+    to { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+  }
+
+  /* Desktop Shortcuts */
+  .desktop-icons {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    z-index: 5;
+  }
+  .d-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 74px;
+    padding: 8px 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-align: center;
+  }
+  .d-icon:hover { background: rgba(255, 255, 255, 0.1); }
+  .d-icon.selected { background: rgba(56, 189, 248, 0.25); border: 1px solid rgba(56, 189, 248, 0.5); }
+  .d-icon-glyph { font-size: 32px; margin-bottom: 4px; }
+  .d-icon-label { font-size: 11px; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.9); }
+
+  /* Interactive Window: Firefox Browser */
+  #sim-browser {
+    position: absolute;
+    top: 60px;
+    left: 140px;
+    width: 580px;
+    height: 390px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 20;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .win-titlebar {
+    background: #1e293b;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #334155;
+  }
+  .win-tabs {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .win-tab {
+    background: #0f172a;
+    padding: 5px 12px;
+    border-radius: 6px 6px 0 0;
+    font-size: 11px;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .win-controls {
+    display: flex;
+    gap: 6px;
+  }
+  .wc-btn { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .wc-close { background: #ef4444; }
+  .wc-min { background: #f59e0b; }
+  .wc-max { background: #10b981; }
+
+  .win-urlbar {
+    background: #111a2e;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #1e293b;
+  }
+  .url-input {
+    flex: 1;
+    background: #070b14;
+    border: 1px solid #334155;
+    color: #94a3b8;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    outline: none;
+  }
+  .win-content {
+    flex: 1;
+    padding: 20px;
+    background: #0a0f1d;
+    overflow-y: auto;
+    color: #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  #browser-search-box {
+    width: 80%;
+    background: #111827;
+    border: 2px solid #0284c7;
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #fff;
+    font-size: 15px;
+    margin-top: 14px;
+    outline: none;
+    box-shadow: 0 0 15px rgba(2, 132, 199, 0.3);
+  }
+
+  /* Start Menu */
+  #sim-start-menu {
+    position: absolute;
+    bottom: 48px;
+    left: 10px;
+    width: 320px;
+    height: 400px;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    display: none;
+    flex-direction: column;
+    padding: 18px;
+    z-index: 50;
+  }
+  .start-header {
+    font-size: 13px;
+    font-weight: 700;
+    color: #38bdf8;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .start-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .start-app {
+    background: #1e293b;
+    padding: 12px 6px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 11px;
+    cursor: pointer;
+  }
+  .start-app:hover { background: #334155; }
+
+  /* Windows Taskbar */
+  .desktop-taskbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    background: rgba(12, 18, 32, 0.88);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    z-index: 40;
+  }
+  .tb-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tb-start {
+    width: 32px;
+    height: 32px;
+    background: rgba(56, 189, 248, 0.15);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .tb-start:hover { background: rgba(56, 189, 248, 0.3); }
+  .tb-tray {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    color: #94a3b8;
+  }
+  .fetch-tray-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    filter: drop-shadow(0 0 4px #38bdf8);
+  }
+
+  /* Fullscreen Overlays: Lock Screen & Sleep Screen */
+  #overlay-sleep {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #020307;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #475569;
+  }
+  .sleep-led {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #d97706;
+    box-shadow: 0 0 12px #d97706;
+    margin-bottom: 14px;
+    animation: sleepPulse 2s infinite ease-in-out;
+  }
+  @keyframes sleepPulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  #overlay-lock {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(15,23,42,0.96), rgba(30,58,138,0.92));
+    backdrop-filter: blur(25px);
+    z-index: 900;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+  }
+
+  /* Live Packet Log Streamer at Bottom */
+  .packet-streamer {
+    background: #090e1a;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    margin-top: 14px;
+    padding: 10px 16px;
+    height: 70px;
+    overflow-y: hidden;
+    font-family: monospace;
+    font-size: 11px;
+    color: #38bdf8;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .packet-line { line-height: 1.5; }
+  .packet-tag { color: #22c55e; font-weight: 700; margin-right: 6px; }
+
+  /* Floating Coordinates Badge */
+  .coords-badge {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #94a3b8;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-family: monospace;
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="demo-header">
+  <div class="demo-brand">
+    <img src="icon.png" class="demo-logo" alt="Fetch Logo">
+    <div class="demo-title-group">
+      <h1>🐕 Fetch <span class="demo-badge">Live Interactive Simulator</span></h1>
+      <p class="demo-subtitle">Use the 1:1 phone remote on the left to control the simulated Windows 11 desktop on the right!</p>
+    </div>
+  </div>
+  <div class="demo-links">
+    <a href="https://github.com/Tr1pAc1d/Fetch" target="_blank" class="btn-repo">
+      ⭐ View on GitHub
+    </a>
+  </div>
+</header>
+
+<!-- Main Simulator -->
+<div class="workspace">
+  <!-- Left Side: Phone Controller -->
+  <div class="phone-panel">
+    <div class="panel-caption">📱 Mobile Remote Controller (1:1)</div>
+    <div class="phone-frame">
+      <div class="phone-notch">
+        <div class="camera-lens"></div>
+        <div class="speaker-slit"></div>
+      </div>
+      <iframe src="remote.html" class="phone-iframe" id="remote-frame"></iframe>
+    </div>
+  </div>
+
+  <!-- Right Side: Simulated Computer Monitor -->
+  <div class="pc-panel">
+    <div class="panel-caption">🖥️ Virtual PC Monitor (Windows 11 Target)</div>
+    <div class="monitor-bezel">
+      <div class="desktop-screen" id="desktop">
+        <div class="desktop-wallpaper-glow"></div>
+        <div class="coords-badge" id="coords">Cursor: X: 350, Y: 220</div>
+
+        <!-- Virtual Cursor -->
+        <svg id="virtual-cursor" viewBox="0 0 24 24">
+          <path fill="#ffffff" stroke="#000000" stroke-width="1.2" d="M3 2l6 17 2.8-5.5L18 20l2.5-1.5-6.2-6.5L20 9z"/>
+        </svg>
+
+        <!-- Desktop Icons -->
+        <div class="desktop-icons">
+          <div class="d-icon" id="icon-firefox" onclick="openSimBrowser()">
+            <div class="d-icon-glyph">🦊</div>
+            <div class="d-icon-label">Firefox</div>
+          </div>
+          <div class="d-icon" id="icon-steam" onclick="flashIcon(this)">
+            <div class="d-icon-glyph">🎮</div>
+            <div class="d-icon-label">Steam Deck</div>
+          </div>
+          <div class="d-icon" id="icon-files" onclick="flashIcon(this)">
+            <div class="d-icon-glyph">📁</div>
+            <div class="d-icon-label">My PC</div>
+          </div>
+          <div class="d-icon" id="icon-trash" onclick="flashIcon(this)">
+            <div class="d-icon-glyph">🗑️</div>
+            <div class="d-icon-label">Recycle Bin</div>
+          </div>
+        </div>
+
+        <!-- Simulated Firefox Browser Window -->
+        <div id="sim-browser">
+          <div class="win-titlebar">
+            <div class="win-tabs">
+              <div class="win-tab" id="browser-tab-title">🦊 Google Search — Mozilla Firefox</div>
+            </div>
+            <div class="win-controls">
+              <span class="wc-btn wc-min"></span>
+              <span class="wc-btn wc-max"></span>
+              <span class="wc-btn wc-close" onclick="closeSimBrowser()"></span>
+            </div>
+          </div>
+          <div class="win-urlbar">
+            <span style="font-size:12px; color:#38bdf8;">🔒</span>
+            <input type="text" class="url-input" id="browser-url" value="https://google.com" readonly>
+          </div>
+          <div class="win-content" id="browser-content">
+            <div style="font-size:38px; font-weight:800; letter-spacing:-1px; margin-bottom:8px;">
+              <span style="color:#38bdf8;">G</span><span style="color:#ef4444;">o</span><span style="color:#f59e0b;">o</span><span style="color:#38bdf8;">g</span><span style="color:#10b981;">l</span><span style="color:#ef4444;">e</span>
+            </div>
+            <p style="font-size:13px; color:#94a3b8;">Click "⌨️ Keyboard" on the phone remote to stream text here in real time!</p>
+            <input type="text" id="browser-search-box" placeholder="Type with phone keyboard..." autofocus>
+          </div>
+        </div>
+
+        <!-- Start Menu -->
+        <div id="sim-start-menu">
+          <div class="start-header">🪟 Windows Start</div>
+          <div style="font-size:11px; color:#94a3b8;">Pinned Applications:</div>
+          <div class="start-grid">
+            <div class="start-app" onclick="openSimBrowser()">🦊 Firefox</div>
+            <div class="start-app" onclick="flashIcon(this)">📁 Files</div>
+            <div class="start-app" onclick="flashIcon(this)">⚙️ Settings</div>
+            <div class="start-app" onclick="flashIcon(this)">🎮 Steam</div>
+            <div class="start-app" onclick="flashIcon(this)">🎵 Spotify</div>
+            <div class="start-app" onclick="simulateSleep()">🌙 Sleep PC</div>
+          </div>
+        </div>
+
+        <!-- Fullscreen Sleep Overlay -->
+        <div id="overlay-sleep">
+          <div class="sleep-led"></div>
+          <h2 style="font-size:22px; color:#cbd5e1; margin-bottom:6px;">PC in Low-Power Sleep Mode</h2>
+          <p style="font-size:13px; color:#64748b; margin-bottom:16px;">Move mouse on phone or tap ⚡ WOL to wake this workstation.</p>
+          <button onclick="wakeFromSleep()" style="background:#0284c7; color:white; border:none; padding:8px 18px; border-radius:8px; font-weight:700; cursor:pointer;">⚡ Wake Workstation (WOL)</button>
+        </div>
+
+        <!-- Fullscreen Lock Screen Overlay -->
+        <div id="overlay-lock">
+          <div style="font-size:56px; font-weight:300; margin-bottom:6px;" id="lock-clock">10:15</div>
+          <p style="font-size:15px; color:#94a3b8; margin-bottom:24px;">Friday, October 9</p>
+          <div style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:50%; width:70px; height:70px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; font-size:28px;">👤</div>
+          <h3 style="font-size:16px; margin-bottom:12px;">TAB inc. Administrator</h3>
+          <button onclick="unlockWorkstation()" style="background:#38bdf8; color:#0f172a; border:none; padding:8px 20px; border-radius:8px; font-weight:700; cursor:pointer;">Unlock (Win + L)</button>
+        </div>
+
+        <!-- Taskbar -->
+        <div class="desktop-taskbar">
+          <div class="tb-left">
+            <div class="tb-start" onclick="toggleStartMenu()" title="Start">🪟</div>
+            <div class="tb-start" onclick="openSimBrowser()" title="Mozilla Firefox">🦊</div>
+            <div class="tb-start" onclick="flashIcon(this)" title="File Explorer">📁</div>
+          </div>
+          <div class="tb-tray">
+            <img src="icon.png" class="fetch-tray-icon" title="Fetch Server (Active in System Tray)" onclick="alert('🐕 Fetch Host is active and connected to your phone!')">
+            <span>📶</span>
+            <span>🔊</span>
+            <span id="tb-clock">10:15 AM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="monitor-stand"></div>
+    <div class="monitor-base"></div>
+
+    <!-- Packet Streamer Ticker -->
+    <div class="packet-streamer" id="log-box">
+      <div class="packet-line"><span class="packet-tag">[READY]</span> WebSocket server listening on port 8765. Move touchpad to test!</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Simulated Cursor State
+  let curX = 350;
+  let curY = 220;
+  const cursorElem = document.getElementById('virtual-cursor');
+  const desktop = document.getElementById('desktop');
+  const coordsLabel = document.getElementById('coords');
+  const logBox = document.getElementById('log-box');
+
+  function updateClock() {
+    const d = new Date();
+    const str = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('tb-clock').innerText = str;
+    document.getElementById('lock-clock').innerText = str;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  function logPacket(tag, text) {
+    const div = document.createElement('div');
+    div.className = 'packet-line';
+    const time = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    div.innerHTML = `<span class="packet-tag">[${time} ${tag}]</span> ${text}`;
+    logBox.prepend(div);
+    if (logBox.children.length > 20) logBox.removeChild(logBox.lastChild);
+  }
+
+  function setCursor(x, y) {
+    const bounds = desktop.getBoundingClientRect();
+    curX = Math.max(0, Math.min(bounds.width - 16, x));
+    curY = Math.max(0, Math.min(bounds.height - 30, y));
+    cursorElem.style.transform = `translate(${curX}px, ${curY}px)`;
+    coordsLabel.innerText = `Cursor: X: ${Math.round(curX)}, Y: ${Math.round(curY)}`;
+  }
+
+  // Handle messages dispatched from the embedded phone iframe!
+  window.onSimulatorMessage = function(data) {
+    if (!data) return;
+    const type = data.type;
+
+    // 1. Mouse Motion
+    if (type === 'move') {
+      const dx = data.dx || 0;
+      const dy = data.dy || 0;
+      setCursor(curX + dx, curY + dy);
+      logPacket('WS-RX', `{"type":"move", "dx":${dx}, "dy":${dy}}`);
+      wakeFromSleep();
+    }
+    // 2. Click
+    else if (type === 'click') {
+      logPacket('CLICK', `Button: ${data.btn || 'left'}`);
+      spawnRipple(curX, curY);
+      checkElementClick(curX, curY, data.btn || 'left');
+    }
+    // 3. Mouse Down / Up
+    else if (type === 'down') {
+      logPacket('MOUSEDOWN', `Button: ${data.btn || 'left'}`);
+      spawnRipple(curX, curY);
+    }
+    // 4. Scroll
+    else if (type === 'scroll') {
+      logPacket('SCROLL', `Delta: ${data.dy}`);
+      const content = document.getElementById('browser-content');
+      if (content) content.scrollTop += -(data.dy * 40);
+    }
+    // 5. Text Streaming (Summon Keyboard)
+    else if (type === 'text') {
+      logPacket('TEXT', `Typed: "${data.text}"`);
+      const searchBox = document.getElementById('browser-search-box');
+      if (searchBox) {
+        searchBox.value += data.text;
+        searchBox.focus();
+      }
+    }
+    // 6. Special Keys
+    else if (type === 'key') {
+      logPacket('KEY', `Key Action: "${data.key}"`);
+      if (data.key === 'win') toggleStartMenu();
+      else if (data.key === 'backspace') {
+        const searchBox = document.getElementById('browser-search-box');
+        if (searchBox) searchBox.value = searchBox.value.slice(0, -1);
+      }
+      else if (data.key === 'enter') {
+        const searchBox = document.getElementById('browser-search-box');
+        if (searchBox && searchBox.value.trim()) {
+          alert(`🔍 Google search query simulated: "${searchBox.value}"`);
+        }
+      }
+    }
+    // 7. Launch URL (Firefox Quick Links)
+    else if (type === 'launch_url') {
+      logPacket('LAUNCH', `Opening Firefox: ${data.url}`);
+      openSimBrowser(data.url);
+    }
+    // 8. Power Actions & Sleep Timer
+    else if (type === 'power') {
+      logPacket('POWER', `Action: ${data.action} ${data.minutes ? '('+data.minutes+'m)' : ''}`);
+      if (data.action === 'sleep') simulateSleep();
+      else if (data.action === 'lock') simulateLock();
+      else if (data.action === 'start_sleep_timer') {
+        logPacket('SLEEP_TIMER', `Couch sleep scheduled for ${data.minutes} minutes.`);
+      }
+      else if (data.action === 'cancel_sleep_timer') {
+        logPacket('SLEEP_TIMER', 'Sleep timer cancelled.');
+      }
+    }
+    // 9. Zoom
+    else if (type === 'zoom') {
+      logPacket('ZOOM', `Pinch Delta: ${data.delta}`);
+    }
+  };
+
+  function spawnRipple(x, y) {
+    const r = document.createElement('div');
+    r.className = 'cursor-ripple';
+    r.style.left = (x + 4) + 'px';
+    r.style.top = (y + 4) + 'px';
+    desktop.appendChild(r);
+    setTimeout(() => r.remove(), 400);
+  }
+
+  function checkElementClick(x, y, btn) {
+    // Check if clicked inside Firefox window
+    const win = document.getElementById('sim-browser');
+    const winRect = win.getBoundingClientRect();
+    const dRect = desktop.getBoundingClientRect();
+    const relX = dRect.left + x;
+    const relY = dRect.top + y;
+
+    if (relX >= winRect.left && relX <= winRect.right && relY >= winRect.top && relY <= winRect.bottom) {
+      document.getElementById('browser-search-box').focus();
+      return;
+    }
+
+    // Check Start button
+    if (y >= dRect.height - 44 && x <= 50) {
+      toggleStartMenu();
+      return;
+    }
+
+    // Check Firefox icon
+    if (x >= 20 && x <= 95 && y >= 20 && y <= 95) {
+      openSimBrowser();
+      return;
+    }
+  }
+
+  function openSimBrowser(url = 'https://google.com') {
+    const win = document.getElementById('sim-browser');
+    win.style.display = 'flex';
+    document.getElementById('browser-url').value = url;
+    document.getElementById('browser-tab-title').innerText = `🦊 ${url.replace('https://', '')} — Mozilla Firefox`;
+    document.getElementById('browser-search-box').focus();
+    logPacket('APP', `Focused Firefox [${url}]`);
+  }
+
+  function closeSimBrowser() {
+    document.getElementById('sim-browser').style.display = 'none';
+  }
+
+  function toggleStartMenu() {
+    const m = document.getElementById('sim-start-menu');
+    m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+  }
+
+  function flashIcon(elem) {
+    elem.classList.add('selected');
+    setTimeout(() => elem.classList.remove('selected'), 600);
+  }
+
+  function simulateSleep() {
+    document.getElementById('overlay-sleep').style.display = 'flex';
+  }
+  function wakeFromSleep() {
+    document.getElementById('overlay-sleep').style.display = 'none';
+  }
+
+  function simulateLock() {
+    document.getElementById('overlay-lock').style.display = 'flex';
+  }
+  function unlockWorkstation() {
+    document.getElementById('overlay-lock').style.display = 'none';
+  }
+
+  // Initialize cursor
+  setCursor(350, 220);
+</script>
+</body>
+</html>

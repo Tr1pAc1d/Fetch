@@ -1,0 +1,78 @@
+======================================================================
+               TAB INC. - TERMS OF SERVICE & PRIVACY POLICY
+                       FETCH TOUCHPAD CONTROLLER
+======================================================================
+Last Updated: October 2026
+Publisher: TAB inc. (https://tabinc.io)
+
+PLEASE READ THIS AGREEMENT CAREFULLY BEFORE INSTALLING OR USING FETCH 
+("THE SOFTWARE"). BY INSTALLING OR USING THE SOFTWARE, YOU AGREE TO 
+BE BOUND BY THESE TERMS AND PRIVACY STANDARDS.
+
+----------------------------------------------------------------------
+1. ABSOLUTE PRIVACY GUARANTEE: ZERO DATA COLLECTION & ZERO SELLING
+----------------------------------------------------------------------
+At TAB inc., user privacy is our foundational principle:
+(a) ZERO DATA COLLECTION: We do NOT collect, harvest, monitor, store, 
+    or log any personal information, keystrokes, mouse coordinates, 
+    browsing history, IP addresses, or hardware IDs.
+(b) ZERO DATA SELLING: We will NEVER sell, rent, monetize, or disclose 
+    any user data to third parties, advertising networks, data brokers, 
+    or external cloud servers.
+(c) 100% LOCAL OPERATION: Fetch operates strictly and exclusively within 
+    your private local network (LAN / Wi-Fi). Communications occur 
+    peer-to-peer directly between your mobile device and your host PC. 
+    No telemetry, tracking beacons, or cloud relays exist in our software.
+
+----------------------------------------------------------------------
+2. LIGHTWEIGHT PERFORMANCE & WIDE HARDWARE COMPATIBILITY
+----------------------------------------------------------------------
+(a) ULTRA-LIGHTWEIGHT FOOTPRINT: The Software is engineered with 
+    low-overhead native APIs to minimize CPU, memory, and battery usage. 
+    It runs quietly in the system tray without burdening your computer.
+(b) OLD & MODERN SYSTEM COMPATIBILITY: We are committed to universal 
+    accessibility. Fetch is built to run smoothly on older legacy 
+    hardware and operating systems as well as high-performance modern 
+    rigs (Windows 7, 8, 10, 11, and modern 64-bit platforms).
+(c) NO BLOATWARE OR ADWARE: Fetch is 100% free of bundled third-party 
+    installers, crypto miners, adware, background updaters, or unwanted 
+    background services.
+
+----------------------------------------------------------------------
+3. GRANT OF LICENSE
+----------------------------------------------------------------------
+TAB inc. grants you a personal, worldwide, non-exclusive, and royalty-free 
+license to install, operate, and enjoy Fetch on any number of personal 
+computers and mobile devices for remote touch and media control.
+
+----------------------------------------------------------------------
+4. FIREWALL & NETWORK CONFIGURATION
+----------------------------------------------------------------------
+Fetch requires local network connectivity (TCP ports 8765, 8080 and UDP 
+port 8766) to allow your mobile device to discover and communicate with 
+your PC. If you choose to add Windows Firewall exceptions during setup, 
+rules are registered solely for inbound local Wi-Fi packets. You maintain 
+complete control and may revoke or modify these rules at any time in 
+Windows Defender Security settings.
+
+----------------------------------------------------------------------
+5. CLEAN UNINSTALLATION
+----------------------------------------------------------------------
+You may uninstall Fetch at any time via Windows Settings > Installed Apps 
+or Control Panel > Programs and Features. Uninstallation completely and 
+cleanly purges all executable files, shortcuts, and firewall rules with 
+zero residual registry pollution.
+
+----------------------------------------------------------------------
+6. DISCLAIMER OF WARRANTIES & LIABILITY
+----------------------------------------------------------------------
+THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+OR IMPLIED. IN NO EVENT SHALL TAB INC. BE LIABLE FOR ANY INCIDENTAL, 
+CONSEQUENTIAL, OR INDIRECT DAMAGES ARISING OUT OF THE USE OR INABILITY 
+TO USE THE SOFTWARE.
+
+----------------------------------------------------------------------
+CONTACT:
+TAB inc. Software Division
+Web: https://tabinc.io
+======================================================================
