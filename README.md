@@ -20,19 +20,32 @@
 
 ---
 
-## 🚀 Quick Download Matrix
+## 🚀 Downloads (Simple & Streamlined)
 
-Choose your operating system below. All releases are standalone, ultra-lightweight, and ready to run.
+Fetch consists of two simple parts:
+1. **The Receiver** — installed on the computer you want to control.
+2. **The Remote** — installed on the device you hold in your hands (phone, tablet, or laptop).
 
-| Operating System | Recommended Download | Package Size | Description |
+### 🖥️ STEP 1: Get the PC Receiver (On the Computer You Want to Control)
+
+| Your Target PC | Download Link | Size | Description |
 | :--- | :--- | :--- | :--- |
-| **Windows 11 / 10 / 8.1** | **[FetchSetup-Modern.exe](https://github.com/Tr1pAc1d/Fetch/releases)** | ~14.2 MB | Sleek 1-click frameless dark installer with automatic firewall setup. |
-| **Windows Portable** | **[Fetch-Server.exe](https://github.com/Tr1pAc1d/Fetch/releases)** | ~18.2 MB | Standalone portable binary. Runs directly into system tray without installation. |
-| **Windows XP / Vista / 7** | **[Fetch-Server-Legacy.exe](https://github.com/Tr1pAc1d/Fetch/releases)** | **131 KB** | Native Win32 / .NET 2.0 host. Consumes **< 10 MB RAM**, zero modern runtime requirements. |
-| **Linux & Steam Deck** | **[fetch-linux.tar.gz](https://github.com/Tr1pAc1d/Fetch/releases)** | ~12 KB | Automated runner (`start_linux.sh`) & background service unit (`fetch.service`). |
-| **Android (Phone / Tablet)**| **[Fetch.apk](https://github.com/Tr1pAc1d/Fetch/releases)** | ~3.8 MB | Full mobile controller with Trackpad, Air-Mouse, Sleep Timer, and WOL. |
+| **Windows 11 / 10 / 8** (Recommended) | **[Fetch-PC-Installer.exe](https://github.com/Tr1pAc1d/Fetch/releases)** | ~14.2 MB | Sleek 1-click frameless dark installer with automatic firewall setup. |
+| **Windows Portable (No Install)** | **[Fetch-PC-Portable.exe](https://github.com/Tr1pAc1d/Fetch/releases)** | ~18.2 MB | Standalone portable binary. Runs directly into system tray with zero install. |
+| **Windows XP / Vista / 7 (Retro)** | **[Fetch-PC-Retro-XP-Vista.exe](https://github.com/Tr1pAc1d/Fetch/releases)** | **131 KB** | Ultra-lightweight native Win32 host (< 10 MB RAM) for retro PCs and arcade rigs. |
+| **Linux & Steam Deck** | **[Fetch-PC-Linux.zip](https://github.com/Tr1pAc1d/Fetch/releases)** | ~9 KB | Automated runner (`start_linux.sh`) & background service unit (`fetch.service`). |
 
-> 💡 **Tip:** While the Fetch host is active on your PC, you can also download the mobile app on your phone simply by visiting `http://<YOUR-PC-IP>:8080` in your phone's browser!
+---
+
+### 📱 STEP 2: Get the Remote (On the Device in Your Hands)
+
+| Your Controller Device | Download Link | Size | Description |
+| :--- | :--- | :--- | :--- |
+| **Android Phone / Tablet** (Most Popular) | **[Fetch-Remote-Android.apk](https://github.com/Tr1pAc1d/Fetch/releases)** | ~3.8 MB | Full mobile controller with Trackpad, Air-Mouse, Sleep Timer, and WOL. |
+| **Windows Laptop / Surface / Tablet** | **[Fetch-Remote-Windows.exe](https://github.com/Tr1pAc1d/Fetch/releases)** | ~14.9 MB | Turns any secondary laptop or Surface touchscreen into a giant wireless trackpad! |
+| **Linux Laptop / Netbook** | **[Fetch-Remote-Linux.zip](https://github.com/Tr1pAc1d/Fetch/releases)** | ~650 KB | Desktop touchpad client for Linux portables and laptops. |
+
+> 💡 **Quick Phone Download:** While Fetch is active on your PC, you can also download the Android app on your phone simply by opening `http://<YOUR-PC-IP>:8080` in your phone's browser!
 
 ---
 

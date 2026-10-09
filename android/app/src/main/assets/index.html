@@ -993,6 +993,7 @@
 
   function vibrate(ms = 25) {
     if (window.AndroidBridge && window.AndroidBridge.vibrate) window.AndroidBridge.vibrate(ms);
+    else if (window.pywebview && window.pywebview.api && window.pywebview.api.vibrate) window.pywebview.api.vibrate(ms);
     else if (navigator.vibrate) navigator.vibrate(ms);
   }
 
@@ -1174,8 +1175,11 @@
     if (window.AndroidBridge && window.AndroidBridge.wakeOnLan) {
       window.AndroidBridge.wakeOnLan(mac);
       alert("⚡ Wake-on-LAN Magic Packet sent to " + mac);
+    } else if (window.pywebview && window.pywebview.api && window.pywebview.api.wakeOnLan) {
+      window.pywebview.api.wakeOnLan(mac);
+      alert("⚡ Wake-on-LAN Magic Packet sent to " + mac);
     } else {
-      alert("Wake-on-LAN operates inside the Android app on local Wi-Fi.");
+      alert("Wake-on-LAN operates inside the app on local Wi-Fi.");
     }
   }
 
@@ -1184,9 +1188,11 @@
     const statusText = document.getElementById('scan-status-text');
     if (statusText) statusText.innerText = 'Scanning Wi-Fi...';
 
-    // Broadcast in Android
+    // Broadcast in Android or Desktop Webview
     if (window.AndroidBridge && window.AndroidBridge.startDiscovery) {
       window.AndroidBridge.startDiscovery();
+    } else if (window.pywebview && window.pywebview.api && window.pywebview.api.startDiscovery) {
+      window.pywebview.api.startDiscovery();
     }
 
     // Probe local environment for browser simulator / PC preview
