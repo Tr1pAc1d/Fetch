@@ -9,16 +9,34 @@
 [![Release](https://img.shields.io/badge/Release-v1.0.0-38bdf8?style=for-the-badge&logo=github)](https://github.com/Tr1pAc1d)
 [![License](https://img.shields.io/badge/License-All_Rights_Reserved-ef4444?style=for-the-badge)](LICENSE)
 [![Privacy](https://img.shields.io/badge/Privacy-Zero_Telemetry-a855f7?style=for-the-badge)](PRIVACY.md)
-[![Live Demo](https://img.shields.io/badge/🎮_Live_Interactive_Demo-Try_in_Browser-22c55e?style=for-the-badge)](demo/index.html)
+[![Live Demo](https://img.shields.io/badge/🎮_Live_Interactive_Demo-Click_to_Launch_in_Browser-22c55e?style=for-the-badge&logo=googlechrome)](https://tr1pac1d.github.io/Fetch/)
 
 <p align="center">
   <b>Turn your Android smartphone or tablet into a high-precision, zero-lag trackpad, keyboard, and couch controller for your computer.</b><br/>
   <i>No accounts. No subscriptions. No ads. 100% local Wi-Fi communication.</i>
 </p>
 
-> 🎮 **Try It in Your Browser:** Test the **[Live Interactive Web Simulator](demo/index.html)** — steer a virtual Windows 11 desktop, type into search bars, and test couch sleep timers using the 1:1 phone remote right now!
+> 🎮 **Live Interactive Web Simulator:**<br/>
+> GitHub READMEs cannot run live JavaScript directly inside the page for security. To test the 1:1 remote controlling a virtual Windows 11 desktop right in your browser, click here:<br/>
+> 👉 **[Launch Live Web Demo (tr1pac1d.github.io/Fetch)](https://tr1pac1d.github.io/Fetch/)**
 
 </div>
+
+---
+
+## 🖥️ Live Simulator Preview
+
+```
+┌─────────────────────────────────┐   ┌──────────────────────────────────────────────────┐
+│   📱 1:1 PHONE REMOTE APP       │   │     🖥️ SIMULATED WINDOWS 11 TARGET PC            │
+│                                 │   │                                                  │
+│   • Fluid Multi-Touch Trackpad  │═══╡►  • Live Virtual Cursor responds in real time    │
+│   • Left / Mid / Right Clicks   │   │   • Clickable Desktop Icons (Firefox, Steam, PC) │
+│   • "Summon Keyboard" Input     │═══╡►  • Real-time Text Streaming into Search Bars    │
+│   • Couch Sleep Timers (15-60m) │═══╡►  • Monitor dims to Standby Mode with Amber LED  │
+│   • Instant Lock & Power Deck   │═══╡►  • Lock Screen (Win + L) & Start Menu Toggles   │
+└─────────────────────────────────┘   └──────────────────────────────────────────────────┘
+```
 
 ---
 
